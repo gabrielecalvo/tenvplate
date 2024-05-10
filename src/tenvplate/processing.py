@@ -3,8 +3,8 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from src.resources import ResourcesManager
-from src.sources.protocols import Resource, SourceSpec
+from .protocols import SourceSpec
+from .resources import ResourcesManager
 
 EnvPairs = Mapping[str, str]
 
@@ -50,45 +50,16 @@ def _request_values(resource_manager: ResourcesManager, values_to_request: Mappi
 
     for key, source_spec in values_to_request.items():
         resource = resource_manager.get_resource(source_spec.resource_id)
-        resolved_value = resource.get_value(source_spec)
-        if resolved_value is None:
-            raise ValueError(f"Failed to fetch value: {source_spec}")
-        resolved_values[key] = resolved_value
+        resolved_values[key] = resource.get_value(source_spec)
 
     return resolved_values
 
 
-def build_default_resources_manager() -> ResourcesManager:
-    resources: list[Resource] = []
-
-    try:
-        from src.sources import azure_keyvault
-
-        resources.append(azure_keyvault.AzureKeyVaultResource())
-    except ImportError:
-        logger.warning("Azure KeyVault resource is not available")
-
-    try:
-        from src.sources import k8s
-
-        resources.append(k8s.KubernetesResource())
-    except ImportError:
-        logger.warning("Azure KeyVault resource is not available")
-
-    return ResourcesManager(*resources)
-
-
 def process(
-    src_path: str | Path = ".env.template",
-    dst_path: str | Path | None = None,
-    resource_manager: ResourcesManager | None = None,
+    src_path: Path,
+    dst_path: Path,
+    resource_manager: ResourcesManager,
 ) -> Path:
-    src_path = Path(src_path)
-    dst_path = Path(src_path).parent / ".env" if dst_path is None else Path(dst_path)
-
-    if resource_manager is None:
-        resource_manager = build_default_resources_manager()
-
     parsed_data = _load_template(src_path)
     values_to_request = _extract_values_to_request(resource_manager, parsed_data)
     resolved_values = _request_values(resource_manager, values_to_request)
@@ -100,7 +71,3 @@ def process(
             f.write(f"{key}={value}\n")
 
     return dst_path
-
-
-if __name__ == "__main__":
-    process()

@@ -1,32 +1,30 @@
-[tool.poetry]
+[project]
 name = "tenvplate"
-version = "0.1.0"
-description = ""
-authors = ["Gabriele Calvo <gcalvo87@gmail.com>"]
+version = "0.0.2"
+authors = [
+  {name = "Gabriele Calvo", email = "gcalvo87@gmail.com"}
+]
+description = "Generate .env files from templates and secrets managers"
 readme = "README.md"
-packages = [{ include = "src" }]
+requires-python = ">=3.10"
+keywords = ["env", "dotenv", "template", "secret"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-azure-keyvault-secrets = { version = "*", optional = true }
-azure-identity = { version = "*", optional = true }
-kubernetes = { version = "*", optional = true }
+[project.optional-dependencies]
+dev = ["pytest", "coverage", "mypy", "ruff", "poethepoet"]
 
-[tool.poetry.extras]
-azure-keyvault = ["azure-identity", "azure-keyvault-secrets"]
-kubernetes = ['kubernetes']
-
-[tool.poetry.group.dev.dependencies]
-ruff = ">=0.4.2"
-mypy = ">=1.10.0"
-pytest = ">=8.1.1"
-poethepoet = ">=0.25.1"
-coverage = ">=7.5.0"
+[project.scripts]
+tenvplate = "tenvplate.cli:run"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.ruff]
 line-length = 120
@@ -55,7 +53,7 @@ filterwarnings = ["error"]
 
 [tool.coverage.run]
 omit = [
-    "*/.venv/*",
+    ".venv/*",
     "tests/*",
 ]
 
@@ -64,16 +62,16 @@ omit = [
 [tool.poe.tasks.lint]
 help = "Lint"
 sequence = [
-    { cmd = "poetry run ruff format ." },
-    { cmd = "poetry run ruff check . --fix" },
-    { cmd = "poetry run mypy ." },
+    { cmd = "ruff format ." },
+    { cmd = "ruff check . --fix" },
+    { cmd = "mypy ." },
 ]
 
 [tool.poe.tasks.test]
 help = "Run unit tests with code coverage"
 sequence = [
-    { cmd = "poetry run coverage run --source src -m pytest ./tests" },
-    { cmd = "poetry run coverage report -m" },
+    { cmd = "coverage run --source src/tenvplate -m pytest ./tests" },
+    { cmd = "coverage report -m" },
 ]
 
 [tool.poe.tasks.all]
