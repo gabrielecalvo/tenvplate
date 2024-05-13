@@ -1,0 +1,33 @@
+name: "Upload Python Package to PyPI"
+
+on:
+  push:
+    branches:
+      - release
+
+env:
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: release
+
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Set up Python ${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: "Build a binary wheel"
+        run: |
+          python -m pip install -U pip build
+          python -m build --wheel
+
+      - name: "Publish to PyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1

@@ -1,0 +1,86 @@
+[project]
+name = "tenvplate"
+version = "0.0.2"
+authors = [
+  {name = "Gabriele Calvo", email = "gcalvo87@gmail.com"}
+]
+description = "Generate .env files from templates and secrets managers"
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["env", "dotenv", "template", "secret"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-random-order", "coverage", "mypy", "ruff", "poethepoet"]
+
+[project.scripts]
+tenvplate = "tenvplate.cli:run"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+show-fixes = true
+
+[tool.ruff.lint]
+select = [# see https://beta.ruff.rs/docs/rules/
+    "A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901"
+]
+ignore = [
+    "A002", # Argument `id` is shadowing a Python builtin
+    "A003", # Class attribute `...` is shadowing a Python builtin
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+]
+exclude = [".venv", "__ignore__"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+disallow_untyped_defs = true
+exclude = "tests|.venv|__ignore__"
+
+[tool.pytest.ini_options]
+addopts = ["--random-order-seed=0"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["tenvplate", "plugins"]
+
+[tool.poe.tasks]
+
+[tool.poe.tasks.lint]
+help = "Lint"
+sequence = [
+    { cmd = "ruff format ." },
+    { cmd = "ruff check . --fix" },
+    { cmd = "mypy ." },
+]
+
+# to be used in CI as it doesn't fix the code
+[tool.poe.tasks.lint-check]
+help = "Lint Check"
+sequence = [
+    { cmd = "ruff format . --check" },
+    { cmd = "ruff check ." },
+    { cmd = "mypy ." },
+]
+
+[tool.poe.tasks.test]
+help = "Run unit tests with code coverage"
+sequence = [
+    { cmd = "coverage run -m pytest ./tests " },
+    { cmd = "coverage report -m" },
+]
+
+[tool.poe.tasks.all]
+help = "Run all required pre-push commands"
+sequence = [{ ref = "lint" }, { ref = "test" }]
