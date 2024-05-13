@@ -2,27 +2,25 @@ import base64
 import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
-from enum import Enum
 from functools import partial
-from typing import Any
+from typing import Any, Literal
 
 from tenvplate.protocols import ResourcesManagerProtocol
 
 DEFAULT_RUN_FUNC = partial(subprocess.check_output, text=True)
 
 
-class SourceType(str, Enum):
-    SECRETS = "secrets"
-    CONFIGMAPS = "configmaps"
-
-
 @dataclass
 class KubernetesSourceSpec:
     namespace: str
-    object_type: SourceType
+    object_type: Literal["secrets", "configmaps"]
     object_name: str
     field: str
     resource_id: str
+
+    def __post_init__(self) -> None:
+        if self.object_type not in ("secrets", "configmaps"):
+            raise ValueError(f"Invalid object type: {self.object_type}")
 
 
 class KubernetesResource:
@@ -34,9 +32,6 @@ class KubernetesResource:
     def build_spec(self, *source_args: Any) -> KubernetesSourceSpec:
         if len(source_args) != 4:
             raise ValueError(f"Invalid number of arguments: {source_args}")
-
-        if source_args[1] not in SourceType.__members__.values():
-            raise ValueError(f"Invalid object type: {source_args[1]}")
 
         return KubernetesSourceSpec(
             resource_id=self.resource_id,
@@ -52,7 +47,7 @@ class KubernetesResource:
         cmd = f"{cmd_prefix} -o jsonpath='{{{json_path}}}'".split(" ")
         value = self.run_func(cmd)
 
-        if source_spec.object_type == SourceType.SECRETS:
+        if source_spec.object_type == "secrets":
             return base64.b64decode(value).decode("utf-8")
 
         return value.strip("'\n")

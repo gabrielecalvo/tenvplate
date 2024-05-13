@@ -14,7 +14,7 @@ class SampleSourceSpec:
 
 class SampleResource:
     resource_id: str = RESOURCE_ID
-    mock_store: dict = {}
+    mock_store: dict = {"existing": "sample-existing-value"}
 
     @staticmethod
     def build_spec(*source_args: Any) -> SampleSourceSpec:

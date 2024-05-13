@@ -16,6 +16,10 @@ class AzureKeyVaultSourceSpec:
     secret_name: str
     resource_id: str
 
+    def __post_init__(self) -> None:
+        if self.object_type not in ("secrets",):
+            raise ValueError(f"Invalid object type: {self.object_type}")
+
 
 class AzureKeyVaultResource:
     resource_id: str = "azure-keyvault"
@@ -26,9 +30,6 @@ class AzureKeyVaultResource:
     def build_spec(self, *source_args: Any) -> AzureKeyVaultSourceSpec:
         if len(source_args) != 3:
             raise ValueError(f"Invalid number of arguments: {source_args}")
-
-        if source_args[1] != "secrets":
-            raise ValueError(f"Invalid object type: {source_args[1]}")
 
         return AzureKeyVaultSourceSpec(
             resource_id=self.resource_id,

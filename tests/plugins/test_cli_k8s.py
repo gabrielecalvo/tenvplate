@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
-from plugins.cli_k8s import KubernetesResource, KubernetesSourceSpec, SourceType
+from plugins.cli_k8s import KubernetesResource, KubernetesSourceSpec, register
 
 
 class TestAzureKeyVaultResource:
@@ -19,7 +19,7 @@ class TestAzureKeyVaultResource:
         with pytest.raises(ValueError, match="Invalid number of arguments:"):
             resource.build_spec(*args)
 
-    @pytest.mark.parametrize("source_type", SourceType)
+    @pytest.mark.parametrize("source_type", ["secrets", "configmaps"])
     def test_build_valid_spec(self, source_type):
         resource = KubernetesResource()
         actual = resource.build_spec("sample-namespace", source_type, "sample-object_name", "sample-field")
@@ -31,9 +31,9 @@ class TestAzureKeyVaultResource:
         with pytest.raises(ValueError, match="Invalid object type:"):
             resource.build_spec("a", "not-secret", "c", "d")
 
-    @pytest.mark.parametrize("source_type", SourceType)
+    @pytest.mark.parametrize("source_type", ["secrets", "configmaps"])
     def test_get_value(self, source_type):
-        run_func = Mock(return_value="value\n" if source_type == SourceType.CONFIGMAPS else "dmFsdWU=")
+        run_func = Mock(return_value="value\n" if source_type == "configmaps" else "dmFsdWU=")
         resource = KubernetesResource(run_func=run_func)
         source_spec = KubernetesSourceSpec(
             self.sample_spec.namespace,
@@ -44,3 +44,25 @@ class TestAzureKeyVaultResource:
         )
         actual = resource.get_value(source_spec)
         assert actual == "value"
+        run_func.assert_called_once_with(
+            [
+                "kubectl",
+                "get",
+                source_type,
+                "sample-object_name",
+                "-n",
+                "sample-namespace",
+                "-o",
+                "jsonpath='{.data.sample-field}'",
+            ]
+        )
+
+
+def test_register():
+    mock_resource_manager = Mock()
+    register_func = mock_resource_manager.register_resource
+
+    register(mock_resource_manager)
+    register_func.assert_called_once()
+    assert register_func.call_args.kwargs["resource_id"] == KubernetesResource.resource_id
+    assert isinstance(register_func.call_args.kwargs["resource"], KubernetesResource)

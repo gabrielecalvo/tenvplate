@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "coverage", "mypy", "ruff", "poethepoet"]
+dev = ["pytest", "pytest-random-order", "coverage", "mypy", "ruff", "poethepoet"]
 
 [project.scripts]
 tenvplate = "tenvplate.cli:run"
@@ -49,6 +49,7 @@ disallow_untyped_defs = true
 exclude = "tests|.venv|__ignore__"
 
 [tool.pytest.ini_options]
+addopts = ["--random-order-seed=0"]
 filterwarnings = ["error"]
 
 [tool.coverage.run]
