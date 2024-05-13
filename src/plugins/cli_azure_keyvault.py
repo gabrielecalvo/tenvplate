@@ -26,6 +26,10 @@ class AzureKeyVaultResource:
     def build_spec(self, *source_args: Any) -> AzureKeyVaultSourceSpec:
         if len(source_args) != 3:
             raise ValueError(f"Invalid number of arguments: {source_args}")
+
+        if source_args[1] != "secrets":
+            raise ValueError(f"Invalid object type: {source_args[1]}")
+
         return AzureKeyVaultSourceSpec(
             resource_id=self.resource_id,
             keyvault_name=source_args[0],

@@ -34,6 +34,10 @@ class KubernetesResource:
     def build_spec(self, *source_args: Any) -> KubernetesSourceSpec:
         if len(source_args) != 4:
             raise ValueError(f"Invalid number of arguments: {source_args}")
+
+        if source_args[1] not in SourceType.__members__.values():
+            raise ValueError(f"Invalid object type: {source_args[1]}")
+
         return KubernetesSourceSpec(
             resource_id=self.resource_id,
             namespace=source_args[0],
