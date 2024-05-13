@@ -1,6 +1,6 @@
 [project]
 name = "tenvplate"
-version = "0.0.2"
+version = "0.0.1"
 authors = [
   {name = "Gabriele Calvo", email = "gcalvo87@gmail.com"}
 ]
@@ -52,10 +52,7 @@ exclude = "tests|.venv|__ignore__"
 filterwarnings = ["error"]
 
 [tool.coverage.run]
-omit = [
-    ".venv/*",
-    "tests/*",
-]
+source = ["tenvplate", "plugins"]
 
 [tool.poe.tasks]
 
@@ -67,10 +64,19 @@ sequence = [
     { cmd = "mypy ." },
 ]
 
+# to be used in CI as it doesn't fix the code
+[tool.poe.tasks.lint-check]
+help = "Lint Check"
+sequence = [
+    { cmd = "ruff format . --check" },
+    { cmd = "ruff check ." },
+    { cmd = "mypy ." },
+]
+
 [tool.poe.tasks.test]
 help = "Run unit tests with code coverage"
 sequence = [
-    { cmd = "coverage run --source src/tenvplate -m pytest ./tests" },
+    { cmd = "coverage run -m pytest ./tests " },
     { cmd = "coverage report -m" },
 ]
 

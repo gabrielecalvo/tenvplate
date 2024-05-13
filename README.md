@@ -42,3 +42,8 @@ poe all
 ```
 pipx install . --force
 ```
+
+### build distribution
+```
+python -m build --wheel
+```
