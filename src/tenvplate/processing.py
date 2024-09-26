@@ -1,14 +1,12 @@
-import logging
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from .progress import progressbar
 from .protocols import SourceSpec
 from .resources import ResourcesManager
 
 EnvPairs = Mapping[str, str]
-
-logger = logging.getLogger(__name__)
 
 
 def _load_template(file_path: Path) -> EnvPairs:
@@ -48,7 +46,7 @@ def _extract_values_to_request(resource_manager: ResourcesManager, parsed_data: 
 def _request_values(resource_manager: ResourcesManager, values_to_request: Mapping[str, SourceSpec]) -> EnvPairs:
     resolved_values = {}
 
-    for key, source_spec in values_to_request.items():
+    for key, source_spec in progressbar(values_to_request.items()):
         resource = resource_manager.get_resource(source_spec.resource_id)
         resolved_values[key] = resource.get_value(source_spec)
 
@@ -61,6 +59,7 @@ def process(
     resource_manager: ResourcesManager,
 ) -> Path:
     parsed_data = _load_template(src_path)
+    resource_manager.logger.info(f"Loaded {len(parsed_data)} key-value pairs from {src_path}")
     values_to_request = _extract_values_to_request(resource_manager, parsed_data)
     resolved_values = _request_values(resource_manager, values_to_request)
 
@@ -69,5 +68,7 @@ def process(
             if key in resolved_values:
                 value = resolved_values[key]
             f.write(f"{key}={value}\n")
+
+    resource_manager.logger.info(f"Successfully created env file: {dst_path}")
 
     return dst_path
