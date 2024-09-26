@@ -14,7 +14,7 @@ def progressbar(
         x = int(size * j / count)
         remaining = ((time.time() - start) / j) * (count - j)
         mins, sec = divmod(remaining, 60)  # limited to minutes
-        time_str = f"{int(mins):02}:{sec:03.1f}"
+        time_str = f"{int(mins):02}:{sec:04.1f}"
         print(
             f"{prefix}[{'█' * x}{('.' * (size - x))}] {j}/{count} Est wait {time_str}", end="\r", file=out, flush=True
         )
