@@ -2,15 +2,17 @@
 
 A way to generate `.env` files from a template file using remote sources.
 
-Currently supports the following remote sources:
+Currently, it supports the following remote sources:
 
-- azure keyvault secrets (assumes the *az cli* is is installed and configured)
+- azure keyvault secrets (assumes the *az cli* is installed and configured)
 - kubernetes secrets & configmaps (assumes the *kubectl cli* is installed and configured)
 
 ## Usage
 
-1. Install the package. I recommend the use of `pipx` to install it in a global and isolated enviroment: 
-   `pipx install tenvplate`
+1. Install the package. I recommend the use of [uv tool](https://github.com/astral-sh/uv) 
+   or [pipx](https://github.com/pypa/pipx) to install it in a global and isolated environment: 
+
+   `uv tool install tenvplate` or `pipx install tenvplate`
 
 2. Create a .env.template with the following format:
    ```env
@@ -35,6 +37,8 @@ pip install -e .[dev]
 poe all
 ```
 
-To test the install with pipx `pipx install . --force`
+To test the ability to install with:
+- `uv tool install --refresh --force .` 
+- `pipx install . --force`
 
 To build the package: `python -m build --wheel`

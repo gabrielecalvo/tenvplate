@@ -4,7 +4,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tenvplate.cli import PLUGIN_DIR, _parse_args, run
-
 from tests.conftest import TEST_DATA_DIR
 
 

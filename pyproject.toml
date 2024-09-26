@@ -1,6 +1,6 @@
 [project]
 name = "tenvplate"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   {name = "Gabriele Calvo", email = "gcalvo87@gmail.com"}
 ]

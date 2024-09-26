@@ -1,7 +1,9 @@
 import dataclasses
 import textwrap
+from unittest.mock import Mock
 
 import pytest
+
 from tenvplate.processing import _extract_values_to_request, _load_template, _request_values, process
 from tenvplate.resources import ResourcesManager
 
@@ -69,7 +71,7 @@ class TestProcessing:
     def mock_resource_manager(self):
         resource1 = MockResource(resource_id="r1", mock_store={"v1": "r11_value", "v2": "r12_value"})
         resource2 = MockResource(resource_id="r2", mock_store={"v1": "r21_value"})
-        rm = ResourcesManager()
+        rm = ResourcesManager(logger=Mock())
         rm.register_resource("r1", resource1)
         rm.register_resource("r2", resource2)
         return rm

@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
+
 from plugins.cli_azure_keyvault import AzureKeyVaultResource, AzureKeyVaultSourceSpec, register
 
 

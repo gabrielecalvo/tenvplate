@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
+
 from plugins.cli_k8s import KubernetesResource, KubernetesSourceSpec, register
 
 

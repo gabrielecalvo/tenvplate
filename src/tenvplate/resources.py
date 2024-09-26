@@ -1,4 +1,5 @@
 import importlib.util
+import logging
 import sys
 from pathlib import Path
 
@@ -16,13 +17,15 @@ def _import_from_fpath(fpath: Path) -> PlugIn:
 
 class ResourcesManager:
     resource_register: dict[str, Resource]
+    logger: logging.Logger
 
-    def __init__(self) -> None:
+    def __init__(self, logger: logging.Logger) -> None:
         self.resource_register = {}
+        self.logger = logger
 
     @classmethod
-    def from_plugin_dir(cls, plugin_dir: Path) -> "ResourcesManager":
-        self = cls()
+    def from_plugin_dir(cls, plugin_dir: Path, logger: logging.Logger) -> "ResourcesManager":
+        self = cls(logger=logger)
         for plugin_file in plugin_dir.glob("*.py"):
             if plugin_file.stem == "__init__":
                 continue
