@@ -29,16 +29,14 @@ Currently, it supports the following remote sources:
 
 
 ## Contributing
-To setup the development environment and run linting and testing:
+To set up the development environment and run linting and testing:
 ```
-python -m venv .venv
-source .venv/Scripts/activate  # or .venv/bin/activate on linux
-pip install -e .[dev]
-poe all
+uv sync
+uv run poe all
 ```
 
 To test the ability to install with:
 - `uv tool install --refresh --force .` 
 - `pipx install . --force`
 
-To build the package: `python -m build --wheel`
+To build the package: `uv build --wheel`

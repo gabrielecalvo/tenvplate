@@ -2,25 +2,32 @@
 name = "tenvplate"
 version = "0.0.3"
 authors = [
-  {name = "Gabriele Calvo", email = "gcalvo87@gmail.com"}
+    { name = "Gabriele Calvo", email = "gcalvo87@gmail.com" }
 ]
 description = "Generate .env files from templates and secrets managers"
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["env", "dotenv", "template", "secret"]
 classifiers = [
-  "Development Status :: 4 - Beta",
-  "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python :: 3",
-  "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
 ]
-
-[project.optional-dependencies]
-dev = ["pytest", "pytest-random-order", "coverage", "mypy", "ruff", "poethepoet"]
 
 [project.scripts]
 tenvplate = "tenvplate.cli:run"
+
+[tool.uv]
+dev-dependencies = [
+    "coverage>=7.6.4",
+    "mypy>=1.13.0",
+    "poethepoet>=0.29.0",
+    "pytest>=8.3.3",
+    "pytest-random-order>=1.1.1",
+    "ruff>=0.7.0",
+]
 
 [build-system]
 requires = ["setuptools>=61.0"]
