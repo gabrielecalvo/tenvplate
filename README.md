@@ -29,14 +29,4 @@ Currently, it supports the following remote sources:
 
 
 ## Contributing
-To set up the development environment and run linting and testing:
-```
-uv sync
-uv run poe all
-```
-
-To test the ability to install with:
-- `uv tool install --refresh --force .` 
-- `pipx install . --force`
-
-To build the package: `uv build --wheel`
+See the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.
