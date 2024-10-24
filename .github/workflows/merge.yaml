@@ -1,9 +1,9 @@
-name: "Upload Python Package to PyPI"
+name: "Build and Publish to PyPI"
 
 on:
   push:
     branches:
-      - release
+      - main
 
 jobs:
   deploy:
@@ -22,8 +22,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: "Build a binary wheel"
-        run: uv build --wheel
-
-      - name: "Publish to PyPI"
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: "Build & publish"
+        run: |
+          uv build
+          uv publish
